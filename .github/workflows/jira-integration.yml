@@ -1,0 +1,180 @@
+name: Jira Integration
+
+on:
+  pull_request:
+    types: [opened, edited, closed, reopened]
+  push:
+    branches:
+      - main
+      - develop
+  issues:
+    types: [opened, edited, closed, reopened]
+
+jobs:
+  sync-to-jira:
+    runs-on: ubuntu-latest
+    name: Sync with Jira
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Extract Jira Issue Key
+        id: jira-key
+        run: |
+          # Extract Jira key from branch name, PR title, or commit message
+          JIRA_KEY=""
+
+          # Try to extract from branch name
+          if [[ "${{ github.head_ref }}" =~ ([A-Z]+-[0-9]+) ]]; then
+            JIRA_KEY="${BASH_REMATCH[1]}"
+          fi
+
+          # Try to extract from PR title
+          if [[ -z "$JIRA_KEY" ]] && [[ "${{ github.event.pull_request.title }}" =~ ([A-Z]+-[0-9]+) ]]; then
+            JIRA_KEY="${BASH_REMATCH[1]}"
+          fi
+
+          # Try to extract from latest commit message
+          if [[ -z "$JIRA_KEY" ]]; then
+            COMMIT_MSG=$(git log -1 --pretty=%B)
+            if [[ "$COMMIT_MSG" =~ ([A-Z]+-[0-9]+) ]]; then
+              JIRA_KEY="${BASH_REMATCH[1]}"
+            fi
+          fi
+
+          echo "jira_key=$JIRA_KEY" >> $GITHUB_OUTPUT
+          echo "Found Jira key: $JIRA_KEY"
+
+      - name: Login to Jira
+        if: steps.jira-key.outputs.jira_key != ''
+        uses: atlassian/gajira-login@v3
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+      - name: Transition Jira Issue on PR Open
+        if: |
+          steps.jira-key.outputs.jira_key != '' &&
+          github.event_name == 'pull_request' &&
+          github.event.action == 'opened'
+        uses: atlassian/gajira-transition@v3
+        with:
+          issue: ${{ steps.jira-key.outputs.jira_key }}
+          transition: "In Review"
+
+      - name: Transition Jira Issue on PR Merge
+        if: |
+          steps.jira-key.outputs.jira_key != '' &&
+          github.event_name == 'pull_request' &&
+          github.event.action == 'closed' &&
+          github.event.pull_request.merged == true
+        uses: atlassian/gajira-transition@v3
+        with:
+          issue: ${{ steps.jira-key.outputs.jira_key }}
+          transition: "Done"
+
+      - name: Add PR Link to Jira Issue
+        if: |
+          steps.jira-key.outputs.jira_key != '' &&
+          github.event_name == 'pull_request' &&
+          github.event.action == 'opened'
+        uses: atlassian/gajira-comment@v3
+        with:
+          issue: ${{ steps.jira-key.outputs.jira_key }}
+          comment: |
+            Pull Request created: ${{ github.event.pull_request.html_url }}
+
+            **PR Details:**
+            - Title: ${{ github.event.pull_request.title }}
+            - Author: ${{ github.event.pull_request.user.login }}
+            - Status: ${{ github.event.pull_request.state }}
+            - Created: ${{ github.event.pull_request.created_at }}
+
+      - name: Comment on PR with Jira Link
+        if: |
+          steps.jira-key.outputs.jira_key != '' &&
+          github.event_name == 'pull_request' &&
+          github.event.action == 'opened'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const jiraKey = '${{ steps.jira-key.outputs.jira_key }}';
+            const jiraUrl = '${{ secrets.JIRA_BASE_URL }}';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🔗 **Linked Jira Issue:** [${jiraKey}](${jiraUrl}/browse/${jiraKey})\n\n✅ This PR has been automatically linked to the Jira issue.`
+            });
+
+  smart-commits:
+    runs-on: ubuntu-latest
+    name: Process Smart Commits
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Process Smart Commits
+        run: |
+          echo "Processing smart commits..."
+
+          # Get all commits in this push
+          COMMITS=$(git log --format=%H ${{ github.event.before }}..${{ github.event.after }})
+
+          for COMMIT in $COMMITS; do
+            MESSAGE=$(git log --format=%B -n 1 $COMMIT)
+            echo "Analyzing commit: $COMMIT"
+            echo "Message: $MESSAGE"
+
+            # Check for smart commit patterns
+            # Pattern: PROJ-123 #time 2h 30m Work description
+            # Pattern: PROJ-123 #comment This is a comment
+            # Pattern: PROJ-123 #close Fixed the issue
+
+            if [[ "$MESSAGE" =~ ([A-Z]+-[0-9]+)[[:space:]]+#time ]]; then
+              echo "⏱️  Time tracking commit detected"
+            fi
+
+            if [[ "$MESSAGE" =~ ([A-Z]+-[0-9]+)[[:space:]]+#comment ]]; then
+              echo "💬 Comment commit detected"
+            fi
+
+            if [[ "$MESSAGE" =~ ([A-Z]+-[0-9]+)[[:space:]]+#close ]]; then
+              echo "✅ Close issue commit detected"
+            fi
+          done
+
+  enforce-jira-reference:
+    runs-on: ubuntu-latest
+    name: Enforce Jira Reference
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Check for Jira Reference
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            const body = context.payload.pull_request.body || '';
+            const branch = context.payload.pull_request.head.ref;
+
+            const jiraPattern = /[A-Z]+-\d+/;
+
+            const hasJiraRef = jiraPattern.test(title) ||
+                              jiraPattern.test(body) ||
+                              jiraPattern.test(branch);
+
+            if (!hasJiraRef) {
+              core.setFailed('❌ No Jira issue reference found in PR title, description, or branch name. Please include a Jira issue key (e.g., PROJ-123).');
+            } else {
+              console.log('✅ Jira issue reference found');
+            }
