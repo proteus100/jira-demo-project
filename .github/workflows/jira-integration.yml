@@ -14,6 +14,9 @@ jobs:
   sync-to-jira:
     runs-on: ubuntu-latest
     name: Sync with Jira
+    permissions:
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout code
@@ -157,6 +160,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Enforce Jira Reference
     if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
 
     steps:
       - name: Check for Jira Reference
