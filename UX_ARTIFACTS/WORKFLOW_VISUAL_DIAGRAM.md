@@ -29,19 +29,20 @@ graph TD
     G --> H
     M --> N[Developer Notified<br/>via Jira comment]
 
-    style A fill:#E3F2FD
-    style B fill:#E3F2FD
-    style C fill:#E3F2FD
-    style D fill:#E8F5E9
-    style E fill:#E8F5E9
-    style F fill:#E8F5E9
-    style G fill:#E8F5E9
-    style H fill:#FFF9C4
-    style I fill:#FFF9C4
-    style J fill:#FFF9C4
-    style L fill:#FFF9C4
-    style M fill:#FFF9C4
-    style N fill:#E3F2FD
+    style A fill:#BBDEFB,stroke:#1565C0,stroke-width:3px,color:#000
+    style B fill:#BBDEFB,stroke:#1565C0,stroke-width:3px,color:#000
+    style C fill:#BBDEFB,stroke:#1565C0,stroke-width:3px,color:#000
+    style D fill:#C8E6C9,stroke:#2E7D32,stroke-width:3px,color:#000
+    style E fill:#C8E6C9,stroke:#2E7D32,stroke-width:3px,color:#000
+    style F fill:#C8E6C9,stroke:#2E7D32,stroke-width:3px,color:#000
+    style G fill:#C8E6C9,stroke:#2E7D32,stroke-width:3px,color:#000
+    style H fill:#FFF59D,stroke:#F57F17,stroke-width:3px,color:#000
+    style I fill:#FFF59D,stroke:#F57F17,stroke-width:3px,color:#000
+    style J fill:#FFF59D,stroke:#F57F17,stroke-width:3px,color:#000
+    style K fill:#FFCDD2,stroke:#C62828,stroke-width:3px,color:#000
+    style L fill:#FFF59D,stroke:#F57F17,stroke-width:3px,color:#000
+    style M fill:#FFF59D,stroke:#F57F17,stroke-width:3px,color:#000
+    style N fill:#BBDEFB,stroke:#1565C0,stroke-width:3px,color:#000
 ```
 
 ---
@@ -58,14 +59,14 @@ flowchart LR
     E --> G[Add Comment<br/>with Link]
     G --> H[Developer<br/>Notified]
 
-    style A fill:#90CAF9
-    style B fill:#A5D6A7
-    style C fill:#A5D6A7
-    style D fill:#FFE082
-    style E fill:#FFE082
-    style F fill:#EF9A9A
-    style G fill:#FFE082
-    style H fill:#90CAF9
+    style A fill:#64B5F6,stroke:#1565C0,stroke-width:3px,color:#000
+    style B fill:#81C784,stroke:#2E7D32,stroke-width:3px,color:#000
+    style C fill:#81C784,stroke:#2E7D32,stroke-width:3px,color:#000
+    style D fill:#FFD54F,stroke:#F57F17,stroke-width:3px,color:#000
+    style E fill:#FFD54F,stroke:#F57F17,stroke-width:3px,color:#000
+    style F fill:#E57373,stroke:#C62828,stroke-width:3px,color:#000
+    style G fill:#FFD54F,stroke:#F57F17,stroke-width:3px,color:#000
+    style H fill:#64B5F6,stroke:#1565C0,stroke-width:3px,color:#000
 ```
 
 ---
@@ -134,14 +135,16 @@ graph TD
     H --> I[Developer: Log Time]
     I --> J[Back to Coding]
 
-    style A fill:#FFCDD2
-    style C fill:#FFCDD2
-    style D fill:#FFCDD2
-    style E fill:#FFCDD2
-    style F fill:#FFCDD2
-    style G fill:#FFCDD2
-    style H fill:#FFCDD2
-    style I fill:#FFCDD2
+    style A fill:#EF9A9A,stroke:#C62828,stroke-width:3px,color:#000
+    style B fill:#FFCDD2,stroke:#C62828,stroke-width:2px,color:#000
+    style C fill:#EF9A9A,stroke:#C62828,stroke-width:3px,color:#000
+    style D fill:#EF9A9A,stroke:#C62828,stroke-width:3px,color:#000
+    style E fill:#EF9A9A,stroke:#C62828,stroke-width:3px,color:#000
+    style F fill:#EF9A9A,stroke:#C62828,stroke-width:3px,color:#000
+    style G fill:#EF9A9A,stroke:#C62828,stroke-width:3px,color:#000
+    style H fill:#EF9A9A,stroke:#C62828,stroke-width:3px,color:#000
+    style I fill:#EF9A9A,stroke:#C62828,stroke-width:3px,color:#000
+    style J fill:#FFCDD2,stroke:#C62828,stroke-width:2px,color:#000
 
     note[Manual steps: 7<br/>Context switches: 5<br/>Time: 5-10 minutes]
 ```
@@ -156,12 +159,12 @@ graph TD
     D --> E[Automation: Post Comments]
     E --> F[Developer: Continue Coding]
 
-    style A fill:#C8E6C9
-    style B fill:#C8E6C9
-    style C fill:#A5D6A7
-    style D fill:#A5D6A7
-    style E fill:#A5D6A7
-    style F fill:#C8E6C9
+    style A fill:#A5D6A7,stroke:#2E7D32,stroke-width:3px,color:#000
+    style B fill:#A5D6A7,stroke:#2E7D32,stroke-width:3px,color:#000
+    style C fill:#81C784,stroke:#1B5E20,stroke-width:3px,color:#000
+    style D fill:#81C784,stroke:#1B5E20,stroke-width:3px,color:#000
+    style E fill:#81C784,stroke:#1B5E20,stroke-width:3px,color:#000
+    style F fill:#A5D6A7,stroke:#2E7D32,stroke-width:3px,color:#000
 
     note[Manual steps: 1<br/>Context switches: 0<br/>Time: < 10 seconds]
 ```
@@ -200,12 +203,24 @@ flowchart TD
     Fail3 --> End
     Warn --> Complete
 
-    style Start fill:#90CAF9
-    style Complete fill:#81C784
-    style Fail1 fill:#EF5350
-    style Fail2 fill:#EF5350
-    style Fail3 fill:#EF5350
-    style Warn fill:#FFB74D
+    style Start fill:#64B5F6,stroke:#1565C0,stroke-width:3px,color:#000
+    style Complete fill:#66BB6A,stroke:#2E7D32,stroke-width:3px,color:#000
+    style Fail1 fill:#E57373,stroke:#C62828,stroke-width:3px,color:#000
+    style Fail2 fill:#E57373,stroke:#C62828,stroke-width:3px,color:#000
+    style Fail3 fill:#E57373,stroke:#C62828,stroke-width:3px,color:#000
+    style Warn fill:#FFB74D,stroke:#E65100,stroke-width:3px,color:#000
+    style End fill:#BDBDBD,stroke:#424242,stroke-width:3px,color:#000
+    style ExtractKey fill:#E3F2FD,stroke:#1976D2,stroke-width:2px,color:#000
+    style ValidateKey fill:#E3F2FD,stroke:#1976D2,stroke-width:2px,color:#000
+    style GetTransitions fill:#E3F2FD,stroke:#1976D2,stroke-width:2px,color:#000
+    style Transition fill:#E3F2FD,stroke:#1976D2,stroke-width:2px,color:#000
+    style AddComment fill:#E3F2FD,stroke:#1976D2,stroke-width:2px,color:#000
+    style Retry fill:#FFF59D,stroke:#F57F17,stroke-width:2px,color:#000
+    style HasKey fill:#FFE082,stroke:#F57F17,stroke-width:2px,color:#000
+    style Exists fill:#FFE082,stroke:#F57F17,stroke-width:2px,color:#000
+    style FindReview fill:#FFE082,stroke:#F57F17,stroke-width:2px,color:#000
+    style Success fill:#FFE082,stroke:#F57F17,stroke-width:2px,color:#000
+    style MaxRetries fill:#FFE082,stroke:#F57F17,stroke-width:2px,color:#000
 ```
 
 ---
